@@ -38,14 +38,8 @@ entry points (`run` and `stop`) of the add-in's built shared library when the la
 
 ## TODO
 
-- [ ] Use `configure_file()` to synchronize project version with the `.manifest` JSON file.
-- [ ] Define a Cmake `option` to specify if the project is a script or add-in. The option would then be referenced by
-`configure_file()` to:
-   * Auto generate a header file defining the entry points
-   * Modify the `.manifest` JSON file to reflect the changes
-- [ ] Check if the CMake source directory is located in the default location for an script or add-in. If not, configure
-the `INSTALL` command to install the shared library and `.manifest` in the appropriate directory (based upon the option
-defined previously).
+- [ ] auto-generate a header/source file defining the entry points based on script or add-in option
+- [ ] auto-generate a header file defining support for resource folder
 
 
 [1]: https://autodeskfusion360.github.io/

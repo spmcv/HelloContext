@@ -1,4 +1,4 @@
-### C++ template
+### C++
 # Prerequisites
 *.d
 
@@ -32,7 +32,7 @@
 *.out
 *.app
 
-### CMake template
+### CMake
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -45,3 +45,5 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
+### Fusion
+*.manifest

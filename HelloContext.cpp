@@ -5,11 +5,11 @@
 #include <nlohmann/json.hpp>
 
 
-using namespace std;
 using namespace adsk::core;
 using namespace adsk::fusion;
 using namespace adsk::cam;
 
+using sstream = std::stringstream;
 using json = nlohmann::json;
 
 
@@ -17,26 +17,46 @@ Ptr<Application> app;
 Ptr<UserInterface> ui;
 
 
-const string parseContext(const char* context, const char* key) {
+bool parse(const char* context, const char *key)
+{
+    bool value;
+    json parsed;
+    sstream message;
 
-    stringstream ss;
+    try {
+        parsed = json::parse(context);
+    } catch (json::parse_error &error) {
+        message << "error while parsing 'context':";
+        message << std::endl;
+        message << error.what();
+        ui->messageBox(message.str(), "Error");
+        return false;
+    }
 
-    auto asJsonObject = json::parse(context);
+    ui->messageBox(parsed.dump(4), "Parsed JSON");
 
-    ss << "parsed 'context' arg as:";
-    ss << "\n\n";
-    ss << asJsonObject.dump(4) ;
-    ss <<  "\n\n";
-    ss << "contains key " << key << " is ";
-    ss << asJsonObject.contains(key);
+    try {
+        value = parsed.at(key);
+    } catch (json::out_of_range &error) {
+        message << "error while accessing 'context':";
+        message << std::endl;
+        message << error.what();
+        ui->messageBox(message.str(), "Error");
+        return false;
+    }
 
-    return ss.str();
+    message << "context key ";
+    message << "'" << key << "'";
+    message << " has value ";
+    message << std::boolalpha;
+    message << "'" << value << "'";
+    ui->messageBox(message.str(), "Success");
+    return true;
 }
 
 
 extern "C" XI_EXPORT bool run(const char* context)
 {
-
     app = Application::get();
     if (!app)
         return false;
@@ -45,31 +65,18 @@ extern "C" XI_EXPORT bool run(const char* context)
     if (!ui)
         return false;
 
-    try {
-        ui->messageBox(parseContext(context, "isApplicationStartup"));
-    } catch (json::parse_error error) {
-        ui->messageBox(error.what(), "Failed to parse 'context'");
-    }
-
-    return true;
+    return parse(context, "IsApplicationStartup");
 }
 
 extern "C" XI_EXPORT bool stop(const char* context)
 {
-
     if (!app)
         return false;
 
     if (!ui)
         return false;
 
-    try {
-        ui->messageBox(parseContext(context, "isApplicationClosing"));
-    } catch (json::parse_error error) {
-        ui->messageBox(error.what(), "Failed to parse 'context'");
-    }
-
-    return true;
+    return parse(context, "IsApplicationClosing");
 }
 
 #ifdef XI_WIN

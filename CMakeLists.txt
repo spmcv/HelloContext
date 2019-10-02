@@ -13,7 +13,7 @@ option(IS_ADDIN "defines if this is a Fusion 360 script or addin" ON)
 
 project(
         HelloContext
-        VERSION 0.1.1
+        VERSION 0.1.2
         DESCRIPTION "Fusion 360 Addin that integrates JSON parser to parse entry point context argument."
 )
 

@@ -1,14 +1,14 @@
 {
 	"autodeskProduct":	"Fusion360",
-	"type":	"${PROJECT_TYPE}",
-	"author":	"${PROJECT_AUTHOR}",
+	"type":	"${MANIFEST_TYPE}",
+	"author":	"${MANIFEST_AUTHOR}",
 	"description":	{
-		"":	"${PROJECT_DESCRIPTION}"
+		"":	"${MANIFEST_DESCRIPTION}"
 	},
 	"supportedOS":	"windows|mac",
 	"editEnabled":	true,
-	"id":	"${PROJECT_GUID}",
-	"version":	"${PROJECT_VERSION}",
+	"id":	"${MANIFEST_GUID}",
+	"version":	"${MANIFEST_VERSION}",
 	"runOnStartup":	false,
 	"sourcewindows":	"",
 	"sourcemac":	""

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 ##
-##  Modify CMake Variables
+##  CMake Variables
 ##  Must include project package directory in module search path.
 ##
 
@@ -9,27 +9,19 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 ##
-##  Find nlohmann JSON Package
-##  Sets up an interface library for linking to project.
-##
-
-message(STATUS "Finding nlohmann JSON library config package")
-find_package(nlohmann_json 3.2.0 REQUIRED)
-
-##
-##  Find Fusion 360 API Package
-##  Sets up an interface library for linking to project.
-##
-
-message(STATUS "Finding Fusion 360 library module package")
-find_package(Fusion360 2.0.6263 REQUIRED)
-
-##
 ##  Define Build Options
 ##  Controls automatic code generation and install destination.
 ##
 
-option(IS_ADDIN "defines if this is a Fusion 360 script or addin" ON)
+option(TARGET_IS_ADDIN "Shared library target is an Addin" ON)
+
+##
+##  Find Dependencies
+##  Sets up an interface libraries for linking to project.
+##
+message(STATUS "Finding required library packages")
+find_package(Fusion360 2.0.6263 REQUIRED)
+find_package(nlohmann_json 3.2.0 REQUIRED)
 
 ##
 ##  Define Project
@@ -48,13 +40,15 @@ project(
 ##
 
 message(STATUS "Configuring .manifest file with project variables")
-set(PROJECT_AUTHOR "Sean McVeigh")
-set(PROJECT_GUID "c75fbb06-fe13-4a14-8c9c-2a056bd8cd5d")
-if (IS_ADDIN)
-    set(PROJECT_TYPE "addin")
+if (${TARGET_IS_ADDIN})
+    set(MANIFEST_TYPE addin)
 else ()
-    set(PROJECT_TYPE "script")
+    set(MANIFEST_TYPE script)
 endif ()
+set(MANIFEST_AUTHOR "Sean McVeigh")
+set(MANIFEST_VERSION ${PROJECT_VERSION})
+set(MANIFEST_DESCRIPTION ${PROJECT_DESCRIPTION})
+set(MANIFEST_GUID "c75fbb06-fe13-4a14-8c9c-2a056bd8cd5d")
 
 ##
 ##  Generate Manifest
@@ -72,7 +66,7 @@ configure_file(
 ##
 
 message(STATUS "Adding target shared library to project")
-add_library(${PROJECT_NAME} SHARED HelloContext.cpp)
+add_library(${PROJECT_NAME} SHARED ${PROJECT_NAME}.cpp)
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
 ##
@@ -80,11 +74,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 ##  Include headers and link shared librares to the project library.
 ##
 
-message(STATUS "Linking JSON library to project")
+message(STATUS "Linking interface libraries to target shared library")
+target_link_libraries(${PROJECT_NAME} PRIVATE "autodesk::fusion360")
 target_link_libraries(${PROJECT_NAME} PRIVATE "nlohmann_json::nlohmann_json")
-
-message(STATUS "Linking Fusion 360 API library to primary shared library")
-target_link_libraries(${PROJECT_NAME} PRIVATE "autodesk::Fusion360")
 
 ##
 ##  Install Targets
@@ -92,7 +84,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE "autodesk::Fusion360")
 ##
 
 message(STATUS "Setting install location for library and manifest")
-if (IS_ADDIN)
+if (TARGET_IS_ADDIN)
     set(PROJECT_INSTALL_DIR ${FUSION360_API_ADDINS_DIR}/${PROJECT_NAME})
 else ()
     set(PROJECT_INSTALL_DIR ${FUSION360_API_SCRIPTS_DIR}/${PROJECT_NAME})

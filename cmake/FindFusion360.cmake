@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-set(FUSION360_API_TARGET Fusion360)
+set(FUSION360_API_TARGET fusion360)
 set(FUSION360_API_NAMESPACE autodesk)
 set(FUSION360_API_DESCRIPTION "External project dependency for Fusion 360 API")
 set(FUSION360_API_HOMEPAGE_URL "https://autodeskfusion360.github.io/")
@@ -103,3 +103,9 @@ endforeach ()
 
 target_include_directories(${FUSION360_API_TARGET} INTERFACE ${FUSION360_API_INCLUDE_DIR})
 target_link_libraries(${FUSION360_API_TARGET} INTERFACE ${FUSION_API_LIBRARY_TARGETS})
+
+##
+##  Export project to package registry
+##
+
+export(PACKAGE ${PROJECT_NAME})
